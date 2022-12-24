@@ -24,6 +24,7 @@ var movies []Movie
 func main(){
 	movies = append(movies,Movie{"1","1234","Movie one",&Director{"firstname","lastname"}})
 	r:=mux.NewRouter()
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 	r.HandleFunc("/movies",getMovies).Methods("GET")
 	r.HandleFunc("/movies/{id}",getMovie).Methods("GET")
 	r.HandleFunc("/movies",createMovie).Methods("POST")
