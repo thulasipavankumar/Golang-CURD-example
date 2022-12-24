@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"net/http"
 	"github.com/gorilla/mux"
+	"flag"
 )
 
 type Movie struct{
@@ -22,6 +23,8 @@ type Director struct{
 }
 var movies []Movie
 func main(){
+	port := flag.Int("port", -1, "specify a port")
+	var portStr string
 	movies = append(movies,Movie{"1","1234","Movie one",&Director{"firstname","lastname"}})
 	r:=mux.NewRouter()
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
@@ -31,7 +34,11 @@ func main(){
 	r.HandleFunc("/movies/{id}",updateMovie).Methods("PUT")
 	r.HandleFunc("/movies/{id}",deleteMovie).Methods("DELETE")
 	fmt.Println("Starting server")
-	log.Fatal(http.ListenAndServe(":8000",r))
+	//log.Fatal(http.ListenAndServe(":8000",r))
+	if *port != -1 {
+        portStr = fmt.Sprintf(":%d", *port)
+	}
+	log.Fatal(http.ListenAndServe(portStr, r))
 	
 }
 func getMovies(w http.ResponseWriter, r *http.Request){
