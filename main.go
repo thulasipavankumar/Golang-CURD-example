@@ -46,14 +46,12 @@ func getMovie(w http.ResponseWriter, r *http.Request){
 			w.Header().Set("Content-Type","application/json")
 			w.WriteHeader(http.StatusOK)
 			w.Write(res)
-			return 
-			
+			return 	
 		}
 	}
-			res, _ := json.Marshal("{ error : No Movie found }")
-			w.Header().Set("Content-Type","application/json")
-			w.WriteHeader(http.StatusOK)
-			w.Write(res)
+	res, _ := json.Marshal("{error : given id not found in the list}")
+	w.WriteHeader(http.StatusNotFound)
+	w.Write(res)
 
 }
 func deleteMovie( w http.ResponseWriter, r *http.Request){
@@ -64,15 +62,16 @@ func deleteMovie( w http.ResponseWriter, r *http.Request){
 			w.Header().Set("Content-Type","application/json")
 			json.NewEncoder(w).Encode(movies)
 			return
-			
 		}
 	}
+	res, _ := json.Marshal("{error : given id not found in the list}")
 	w.WriteHeader(http.StatusNotFound)
+	w.Write(res)
+	
 }
 func createMovie(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type","application/json")
 	var movie Movie
-	
 	_ = json.NewDecoder(r.Body).Decode(&movie)
 	movie.ID = strconv.Itoa(rand.Intn(10000000))
     movies = append(movies,	movie)
@@ -84,16 +83,17 @@ func updateMovie(w http.ResponseWriter, r *http.Request){
 	id := vars["id"]
 	for index,item := range movies{
 		if item.ID == id {
-			movies=append(movies[:index],movies[index+1:]...)
-			
+			movies=append(movies[:index],movies[index+1:]...)		
 			var movie Movie
 			_ = json.NewDecoder(r.Body).Decode(&movie)
 			movie.ID = id
-	
     		movies = append(movies,	movie)
 			json.NewEncoder(w).Encode(movie)
-			break
+			return
 		}
 	}
+	res, _ := json.Marshal("{error:given id not found in the list}")
+	w.WriteHeader(http.StatusNotFound)
+	w.Write(res)
 	
 }
